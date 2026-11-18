@@ -50,8 +50,7 @@ const hookTrainsCatalog = async () => {
             throw new Error(`Failed to load trains (${response.status})`);
         }
 
-        const payload = await response.json();
-        const trains = payload.trains || [];
+        const trains = await response.json();
         const fragment = document.createDocumentFragment();
 
         trains.forEach((train) => {
