@@ -1,26 +1,23 @@
+// The main router. It only mounts the other route files.
+//
+// Foundation change: the individual route definitions that used to be listed here
+// (home, about, trains page, trains API, 500 test page) moved into ejs-routes.js and
+// api-routes.js. The old src/routes/trains.js file is deleted.
+import apiRoutes from './api-routes.js';
+import ejsRoutes from './ejs-routes.js';
 import railTripsRouter from './trips.js';
-import { trainsApi, trainsPage } from './trains.js';
 import { Router } from 'express';
-import { homePage, aboutPage, testErrorPage } from './index.js';
 
 const router = Router();
 
-// Home page
-router.get('/', homePage);
+// Pages that render EJS templates
+router.use(ejsRoutes);
 
-// About page
-router.get('/about', aboutPage);
+// JSON API routes
+router.use(apiRoutes);
 
-// Trains page
-router.get('/trains', trainsPage);
-
-// Trains API
-router.get('/api/trains', trainsApi);
-
-// Rail trips
+// Rail trips. These stay here for now. The Trips and Bookings issues move them into
+// the two route files above when they refactor those pages.
 router.use('/trips', railTripsRouter);
-
-// Test 500 error page
-router.get('/500', testErrorPage);
 
 export default router;
