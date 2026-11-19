@@ -1,0 +1,53 @@
+
+<%- include('./partials/header') %>
+
+<section class="bookings-hero">
+    <h1>Bookings Administration</h1>
+    <p>
+        View and manage booking records for the Kizuna Rail network.
+    </p>
+</section>
+
+<section class="bookings-catalog">
+    <div id="bookings-loading" class="bookings-state">
+        Loading bookings...
+    </div>
+
+    <div id="bookings-error" class="bookings-state bookings-error" hidden></div>
+
+    <div id="bookings-empty" class="bookings-state" hidden>
+        No bookings have been created yet.
+    </div>
+
+    <div class="bookings-table-wrapper">
+        <table id="bookings-table" hidden>
+            <thead>
+                <tr>
+                    <th>Booking Reference</th>
+                    <th>Trip</th>
+                    <th>Schedule</th>
+                    <th>Travel Day</th>
+                    <th>Ticket Class</th>
+                    <th>Passengers</th>
+                    <th>Date Created</th>
+                </tr>
+            </thead>
+
+            <tbody id="bookings-list"></tbody>
+        </table>
+    </div>
+
+    <template id="booking-row-template">
+        <tr>
+            <td data-field="reference"></td>
+            <td data-field="trip"></td>
+            <td data-field="schedule"></td>
+            <td data-field="day"></td>
+            <td data-field="ticket-class"></td>
+            <td data-field="passengers"></td>
+            <td data-field="created-at"></td>
+        </tr>
+    </template>
+</section>
+
+<%- include('./partials/footer') %>
