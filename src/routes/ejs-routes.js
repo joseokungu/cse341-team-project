@@ -8,6 +8,7 @@
 import { Router } from 'express';
 import { trainsPage } from '../controllers/trains.js';
 import { homePage, aboutPage, testErrorPage } from './index.js';
+import { bookingsAdminPage } from '../controllers/bookings.js';
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.get('/trains', trainsPage);
 
 // Test 500 error page
 router.get('/500', testErrorPage);
+
+// Bookings administration page
+router.get('/bookings-admin', bookingsAdminPage);
 
 export default router;

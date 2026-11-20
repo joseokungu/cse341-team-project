@@ -14,6 +14,7 @@
 // matches the one in its OpenAPI comment exactly.
 import { Router } from 'express';
 import { getAllTrains } from '../controllers/trains.js';
+import { getAllBookings } from '../controllers/bookings.js';
 
 const router = Router();
 
@@ -68,5 +69,61 @@ const router = Router();
  *               $ref: '#/components/schemas/Error'
  */
 router.get('/api/trains', getAllTrains);
+
+/**
+ * @openapi
+ * /api/bookings:
+ *   get:
+ *     summary: Get all bookings
+ *     tags:
+ *       - Bookings
+ *     responses:
+ *       200:
+ *         description: A JSON array of bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: JRABC12345
+ *                   scheduleId:
+ *                     type: number
+ *                   tripId:
+ *                     type: string
+ *                   ticketClass:
+ *                     type: string
+ *                   selectedDay:
+ *                     type: string
+ *                   passengers:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         firstName:
+ *                           type: string
+ *                         lastName:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         phone:
+ *                           type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Unexpected server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/api/bookings', getAllBookings);
 
 export default router;
