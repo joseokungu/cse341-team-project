@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Trip Booking API",
+    "title": "Kizuna Rail API",
     "version": "1.0.0",
-    "description": "A simple API for working with trip bookings"
+    "description": "JSON API for the Kizuna Rail scenic train trips application"
   },
   "servers": [
     {
@@ -11,30 +11,104 @@
       "description": "Current server"
     }
   ],
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Failed to fetch trains"
+          }
+        }
+      },
+      "Trip": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "alpine-panorama"
+          },
+          "name": {
+            "type": "string",
+            "example": "Alpine Panorama Express"
+          },
+          "description": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string",
+            "example": "central"
+          },
+          "startStation": {
+            "type": "string",
+            "example": "nagoya"
+          },
+          "endStation": {
+            "type": "string",
+            "example": "toyama"
+          },
+          "duration": {
+            "type": "string",
+            "example": "4.5 hours"
+          },
+          "distance": {
+            "type": "number",
+            "description": "Distance in kilometers",
+            "example": 180
+          },
+          "highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bestSeason": {
+            "type": "string",
+            "example": "autumn"
+          },
+          "operatingMonths": {
+            "type": "array",
+            "description": "Month numbers, 1 (January) to 12 (December)",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "/images/routes/alpine-panorama.png"
+          }
+        }
+      }
+    }
+  },
   "paths": {
-    "/": {
+    "/api/trips": {
       "get": {
+        "summary": "Get all trips",
         "tags": [
-          "Pages"
+          "Trips"
         ],
-        "summary": "Get the home page",
         "responses": {
           "200": {
-            "description": "Home page rendered successfully",
+            "description": "A JSON array of trips",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Trip"
+                  }
                 }
               }
             }
           },
           "500": {
-            "description": "The page could not be rendered",
+            "description": "Unexpected server error",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -42,59 +116,51 @@
         }
       }
     },
-    "/about": {
+    "/api/trips/{id}": {
       "get": {
+        "summary": "Get one trip by ID",
         "tags": [
-          "Pages"
+          "Trips"
         ],
-        "summary": "Get the about page",
-        "responses": {
-          "200": {
-            "description": "About page rendered successfully",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "The page could not be rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "The trip's string ID",
+            "schema": {
+              "type": "string",
+              "example": "alpine-panorama"
             }
           }
-        }
-      }
-    },
-    "/trains": {
-      "get": {
-        "tags": [
-          "Pages"
         ],
-        "summary": "Get the trains page",
         "responses": {
           "200": {
-            "description": "Trains page rendered successfully",
+            "description": "The requested trip",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Trip"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No trip with that ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
           },
           "500": {
-            "description": "The page could not be rendered",
+            "description": "Unexpected server error",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -104,23 +170,54 @@
     },
     "/api/trains": {
       "get": {
+        "summary": "Get all trains",
         "tags": [
           "Trains"
         ],
-        "summary": "List trains",
         "responses": {
           "200": {
-            "description": "Trains returned successfully",
+            "description": "A JSON array of trains",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "trains": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": true
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "series-e353"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Series E353 Limited Express"
+                      },
+                      "operator": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "maxSpeedKmh": {
+                        "type": "number"
+                      },
+                      "capacity": {
+                        "type": "number"
+                      },
+                      "powerSource": {
+                        "type": "string"
+                      },
+                      "bestFor": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "imageUrl": {
+                        "type": "string"
+                      },
+                      "imageAlt": {
+                        "type": "string"
                       }
                     }
                   }
@@ -129,11 +226,11 @@
             }
           },
           "500": {
-            "description": "An error occurred while retrieving trains",
+            "description": "Unexpected server error",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -141,25 +238,65 @@
         }
       }
     },
-    "/api/trips": {
+    "/api/bookings": {
       "get": {
+        "summary": "Get all bookings",
         "tags": [
-          "Trips"
+          "Bookings"
         ],
-        "summary": "List trips",
         "responses": {
           "200": {
-            "description": "Trips returned successfully",
+            "description": "A JSON array of bookings",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "trips": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": true
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "JRABC12345"
+                      },
+                      "scheduleId": {
+                        "type": "number"
+                      },
+                      "tripId": {
+                        "type": "string"
+                      },
+                      "ticketClass": {
+                        "type": "string"
+                      },
+                      "selectedDay": {
+                        "type": "string"
+                      },
+                      "passengers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "firstName": {
+                              "type": "string"
+                            },
+                            "lastName": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "type": "string"
+                            },
+                            "phone": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
                       }
                     }
                   }
@@ -168,215 +305,11 @@
             }
           },
           "500": {
-            "description": "An error occurred while retrieving trips",
+            "description": "Unexpected server error",
             "content": {
-              "text/html": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips": {
-      "get": {
-        "tags": [
-          "Trips"
-        ],
-        "summary": "Get the trips page",
-        "responses": {
-          "200": {
-            "description": "Trips page rendered successfully",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "The page could not be rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips/{tripId}": {
-      "get": {
-        "tags": [
-          "Trips"
-        ],
-        "summary": "Get trip details",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "tripId",
-            "required": true,
-            "description": "Trip identifier",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Trip details page rendered successfully",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Trip details could not be retrieved or rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips/booking/{scheduleId}": {
-      "get": {
-        "tags": [
-          "Trips"
-        ],
-        "summary": "Get the trip booking page",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "scheduleId",
-            "required": true,
-            "description": "Numeric schedule identifier",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Booking page rendered successfully",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Booking details could not be retrieved or rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips/book": {
-      "post": {
-        "tags": [
-          "Trips"
-        ],
-        "summary": "Submit a trip booking",
-        "responses": {
-          "302": {
-            "description": "Booking accepted; redirect to the confirmation page",
-            "headers": {
-              "Location": {
-                "description": "URL of the booking confirmation page",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "The booking could not be processed",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trips/confirmation/{confirmationId}": {
-      "get": {
-        "tags": [
-          "Trips"
-        ],
-        "summary": "Get a booking confirmation page",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "confirmationId",
-            "required": true,
-            "description": "Booking confirmation identifier",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Confirmation page rendered successfully",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Confirmation could not be retrieved or rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/500": {
-      "get": {
-        "tags": [
-          "Pages"
-        ],
-        "summary": "Trigger the test server error page",
-        "responses": {
-          "500": {
-            "description": "Test error page rendered",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -385,19 +318,5 @@
       }
     }
   },
-  "components": {},
-  "tags": [
-    {
-      "name": "Pages",
-      "description": "Rendered site pages"
-    },
-    {
-      "name": "Trains",
-      "description": "Train data"
-    },
-    {
-      "name": "Trips",
-      "description": "Trip data and booking pages"
-    }
-  ]
+  "tags": []
 }

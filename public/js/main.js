@@ -17,12 +17,10 @@ const hookTripsCatalog = async () => {
             throw new Error(`Failed to load trips (${response.status})`);
         }
 
-        const payload = await response.json();
-        if (!Array.isArray(payload.trips)) {
+        const trips = await response.json();
+        if (!Array.isArray(trips)) {
             throw new Error('Trip response did not contain a trips list');
         }
-
-        const trips = payload.trips;
         const populateFilter = (select, values, queryParam) => {
             values.forEach((value) => {
                 const option = document.createElement('option');
@@ -135,8 +133,7 @@ const hookTrainsCatalog = async () => {
             throw new Error(`Failed to load trains (${response.status})`);
         }
 
-        const payload = await response.json();
-        const trains = payload.trains || [];
+        const trains = await response.json();
         const fragment = document.createDocumentFragment();
 
         trains.forEach((train) => {
@@ -176,4 +173,94 @@ const hookTrainsCatalog = async () => {
 document.addEventListener('DOMContentLoaded', () => {
     hookTripsCatalog();
     hookTrainsCatalog();
+    hookBookingsCatalog();
 });
+
+
+const hookBookingsCatalog = async () => {
+    const listEl = document.getElementById('bookings-list');
+    const templateEl = document.getElementById('booking-row-template');
+    const loadingEl = document.getElementById('bookings-loading');
+    const errorEl = document.getElementById('bookings-error');
+    const emptyEl = document.getElementById('bookings-empty');
+    const tableEl = document.getElementById('bookings-table');
+
+    // Only run on the bookings administration page.
+    if (!listEl || !templateEl) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/bookings');
+
+        if (!response.ok) {
+            throw new Error(`Failed to load bookings (${response.status})`);
+        }
+
+        const bookings = await response.json();
+
+        if (!Array.isArray(bookings)) {
+            throw new Error('Invalid bookings response');
+        }
+
+        if (loadingEl) {
+            loadingEl.hidden = true;
+        }
+
+        if (bookings.length === 0) {
+            if (emptyEl) {
+                emptyEl.hidden = false;
+            }
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        bookings.forEach((booking) => {
+            const row = templateEl.content.cloneNode(true);
+
+            row.querySelector('[data-field="reference"]').textContent =
+                booking.id;
+
+            row.querySelector('[data-field="trip"]').textContent =
+                booking.tripId;
+
+            row.querySelector('[data-field="schedule"]').textContent =
+                booking.scheduleId;
+
+            row.querySelector('[data-field="day"]').textContent =
+                booking.selectedDay.charAt(0).toUpperCase() +
+                booking.selectedDay.slice(1);
+
+            row.querySelector('[data-field="ticket-class"]').textContent =
+                booking.ticketClass.charAt(0).toUpperCase() +
+                booking.ticketClass.slice(1);
+
+            row.querySelector('[data-field="passengers"]').textContent =
+                booking.passengers.length;
+
+            row.querySelector('[data-field="created-at"]').textContent =
+                new Date(booking.createdAt).toLocaleDateString();
+
+            fragment.appendChild(row);
+        });
+
+        listEl.replaceChildren(fragment);
+
+        if (tableEl) {
+            tableEl.hidden = false;
+        }
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+
+        if (loadingEl) {
+            loadingEl.hidden = true;
+        }
+
+        if (errorEl) {
+            errorEl.hidden = false;
+            errorEl.textContent =
+                'Unable to load bookings right now. Please try again later.';
+        }
+    }
+};
