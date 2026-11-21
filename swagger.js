@@ -39,9 +39,7 @@ const options = {
       }
     }
   },
-  // Only this file is scanned for OpenAPI comments. Add other route files here if
-  // API routes are ever placed in them.
-  apis: ['./src/routes/api-routes.js']
+  apis: ['./src/routes/*.js']
 };
 
 const swaggerSpec = swaggerJsdoc(options);
