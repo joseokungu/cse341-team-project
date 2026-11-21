@@ -1,23 +1,120 @@
-// The main router. It only mounts the other route files.
-//
-// Foundation change: the individual route definitions that used to be listed here
-// (home, about, trains page, trains API, 500 test page) moved into ejs-routes.js and
-// api-routes.js. The old src/routes/trains.js file is deleted.
+
+import { Router } from 'express';
 import apiRoutes from './api-routes.js';
 import ejsRoutes from './ejs-routes.js';
-import railTripsRouter from './trips.js';
-import { Router } from 'express';
 
 const router = Router();
 
-// Pages that render EJS templates
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Trip:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: alpine-panorama
+ *         name:
+ *           type: string
+ *           example: Alpine Panorama Express
+ *         description:
+ *           type: string
+ *         region:
+ *           type: string
+ *           example: central
+ *         startStation:
+ *           type: string
+ *           example: nagoya
+ *         endStation:
+ *           type: string
+ *           example: toyama
+ *         duration:
+ *           type: string
+ *           example: 4.5 hours
+ *         distance:
+ *           type: number
+ *           description: Distance in kilometers
+ *           example: 180
+ *         highlights:
+ *           type: array
+ *           items:
+ *             type: string
+ *         bestSeason:
+ *           type: string
+ *           example: autumn
+ *         operatingMonths:
+ *           type: array
+ *           description: Month numbers, 1 (January) to 12 (December)
+ *           items:
+ *             type: integer
+ *         imageUrl:
+ *           type: string
+ *           example: /images/routes/alpine-panorama.png
+ */
+
+/**
+ * @openapi
+ * /api/trips:
+ *   get:
+ *     summary: Get all trips
+ *     tags:
+ *       - Trips
+ *     responses:
+ *       200:
+ *         description: A JSON array of trips
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Trip'
+ *       500:
+ *         description: Unexpected server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+/**
+ * @openapi
+ * /api/trips/{id}:
+ *   get:
+ *     summary: Get one trip by ID
+ *     tags:
+ *       - Trips
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The trip's string ID
+ *         schema:
+ *           type: string
+ *           example: alpine-panorama
+ *     responses:
+ *       200:
+ *         description: The requested trip
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Trip'
+ *       404:
+ *         description: No trip with that ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Unexpected server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
+// Register application routes
 router.use(ejsRoutes);
-
-// JSON API routes
 router.use(apiRoutes);
-
-// Rail trips. These stay here for now. The Trips and Bookings issues move them into
-// the two route files above when they refactor those pages.
-router.use('/trips', railTripsRouter);
 
 export default router;
