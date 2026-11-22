@@ -173,6 +173,113 @@
           }
         }
       }
+    },
+    "/api/trips/{id}/schedules": {
+      "get": {
+        "summary": "Get the schedules for a trip",
+        "description": "Returns the trip's schedules, earliest departure first. With the optional month parameter, returns them only if the trip operates in that month, otherwise an empty array.",
+        "tags": [
+          "Schedules"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "The trip id, such as alpine-panorama",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "month",
+            "required": false,
+            "description": "Month number from 1 through 12",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A JSON array of schedules (empty if none apply)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "tripId": {
+                        "type": "string",
+                        "example": "alpine-panorama"
+                      },
+                      "departureTime": {
+                        "type": "string",
+                        "example": "08:30"
+                      },
+                      "arrivalTime": {
+                        "type": "string",
+                        "example": "13:00"
+                      },
+                      "daysOfWeek": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": [
+                          "monday",
+                          "tuesday"
+                        ]
+                      },
+                      "status": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The month is not a whole number from 1 through 12",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trip not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "tags": []
