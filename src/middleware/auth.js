@@ -1,15 +1,15 @@
 export const loadSessionUser = async (req, res, next) => {
-  req.user = req.session.user || null;
+  req.user = req.session?.user || null;
   res.locals.user = req.user;
   next();
 };
 
-const isLoggedIn = (req) => { return Boolean(req.user); };
-const hasRole = (req, role) => { return req.user.role === role; };
+const isLoggedIn = (req) => Boolean(req.user || req.session?.user);
+const hasRole = (req, role) => (req.user?.role || req.session?.user?.role) === role;
 
 export function requireApiLogin() {
   return (req, res, next) => {
-    if (!req.session?.userId) {
+    if (!isLoggedIn(req)) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
@@ -19,7 +19,7 @@ export function requireApiLogin() {
 
 export function requirePageLogin() {
   return (req, res, next) => {
-    if (!req.session?.userId) {
+    if (!isLoggedIn(req)) {
       return res.redirect('/login');
     }
 
@@ -29,11 +29,11 @@ export function requirePageLogin() {
 
 export function requireApiRole(roleName) {
   return (req, res, next) => {
-    if (!req.session?.userId) {
+    if (!isLoggedIn(req)) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    if (req.session.role !== roleName) {
+    if (!hasRole(req, roleName)) {
       return res.status(403).json({ error: 'Forbidden' });
     }
 
@@ -43,11 +43,11 @@ export function requireApiRole(roleName) {
 
 export function requirePageRole(roleName) {
   return (req, res, next) => {
-    if (!req.session?.userId) {
+    if (!isLoggedIn(req)) {
       return res.redirect('/login');
     }
 
-    if (req.session.role !== roleName) {
+    if (!hasRole(req, roleName)) {
       return res.status(403).render('errors/403', { title: 'Forbidden' });
     }
 
