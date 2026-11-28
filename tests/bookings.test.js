@@ -14,7 +14,7 @@ async function loginAs(roleName) {
   });
 
   if (roleName === "admin") {
-    const adminRole = await Role.create({ name: "admin" });
+    const adminRole = await Role.findOne({ name: "admin" });
     user.role = adminRole._id;
     await user.save();
   }

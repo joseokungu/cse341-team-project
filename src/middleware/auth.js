@@ -4,8 +4,10 @@ export const loadSessionUser = async (req, res, next) => {
   next();
 };
 
-const isLoggedIn = (req) => Boolean(req.user || req.session?.user);
-const hasRole = (req, role) => (req.user?.role || req.session?.user?.role) === role;
+const isLoggedIn = (req) => Boolean(req.user || req.session?.user || req.session?.userId);
+const hasRole = (req, role) => {
+  return (req.user?.role || req.session?.user?.role || req.session?.role) === role;
+};
 
 export function requireApiLogin() {
   return (req, res, next) => {
