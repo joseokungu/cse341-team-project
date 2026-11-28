@@ -9,6 +9,7 @@ import {
 import { trainsPage } from '../controllers/trains.js';
 import { tripDetailsPage, tripListPage } from '../controllers/trips.js';
 import { aboutPage, homePage, testErrorPage } from './index.js';
+import { loginPage, loginUser, logoutUser, registerPage, registerUser } from '../controllers/auth.js';
 
 const router = Router();
 
@@ -22,5 +23,10 @@ router.post('/trips/book', processBookingRequest);
 router.get('/trips/confirmation/:confirmationId', bookingConfirmationPage);
 router.get('/500', testErrorPage);
 router.get('/bookings-admin', bookingsAdminPage);
+router.get('/register', registerPage);
+router.post('/register', registerUser);
+router.get('/login', loginPage);
+router.post('/login', loginUser);
+router.get('/logout', logoutUser);
 
 export default router;
