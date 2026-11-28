@@ -6,19 +6,32 @@ import globalMiddleware from './src/middleware/global.js';
 import routes from './src/routes/router.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json' with { type: 'json' };
+import session from 'express-session';
+import { loadSessionUser } from './src/middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = Path.dirname(__filename);
 
 const app = express();
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const SESSION_SECRET = process.env.SESSION_SECRET || 'default_secret_key';
 
-// Add version info to res.locals for access in templates.
+// Configure session middleware.
+app.use(session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: { maxAge: 60 * 60 * 1000 } // Session expires after 1 hour of inactivity
+}));
+
+app.use(loadSessionUser);
 app.use((req, res, next) => {
     res.locals.appVersion = pkg.version;
     next();
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Configure static files and EJS templates.
 app.use(express.static(Path.join(__dirname, 'public')));

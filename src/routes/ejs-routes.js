@@ -8,12 +8,27 @@ import {
 } from '../controllers/bookings.js';
 import { trainsPage } from '../controllers/trains.js';
 import { tripDetailsPage, tripListPage } from '../controllers/trips.js';
-import { aboutPage, homePage, testErrorPage } from './index.js';
+import { login, logout, register } from '../controllers/auth.js';
+import {
+  aboutPage,
+  homePage,
+  loginPage,
+  registerPage,
+  testErrorPage,
+} from './index.js';
+import {
+  requirePageRole
+} from '../middleware/auth.js';
 
 const router = Router();
 
 router.get('/', homePage);
 router.get('/about', aboutPage);
+router.get('/register', registerPage);
+router.get('/login', loginPage);
+router.post('/register', register);
+router.post('/login', login);
+router.post('/logout', logout);
 router.get('/trains', trainsPage);
 router.get('/trips', tripListPage);
 router.get('/trips/:tripId', tripDetailsPage);
@@ -21,6 +36,6 @@ router.get('/trips/booking/:scheduleId', bookingPage);
 router.post('/trips/book', processBookingRequest);
 router.get('/trips/confirmation/:confirmationId', bookingConfirmationPage);
 router.get('/500', testErrorPage);
-router.get('/bookings-admin', bookingsAdminPage);
+router.get('/bookings-admin', requirePageRole('admin'), bookingsAdminPage);
 
 export default router;
