@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import pkg from './package.json' with { type: 'json' };
 import globalMiddleware from './src/middleware/global.js';
 import routes from './src/routes/router.js';
+import { loadSessionUser, sessionMiddleware } from './src/middleware/session.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json' with { type: 'json' };
 
@@ -28,6 +29,16 @@ app.set('views', Path.join(__dirname, 'src/views'));
 // Parse JSON and URL-encoded request bodies.
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Behind Render's proxy, trust the first proxy so secure session cookies work.
+if ((process.env.NODE_ENV?.toLowerCase() || 'production') === 'production') {
+    app.set('trust proxy', 1);
+}
+
+// Sessions must be set up before the routes. loadSessionUser then makes the signed-in
+// user available as req.user and, in templates, as `user`.
+app.use(sessionMiddleware);
+app.use(loadSessionUser);
 
 app.use(globalMiddleware);
 app.use('/', routes);
