@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<section class="content">
+    <h1>My Dashboard</h1>
+
+    <h2>Welcome, <%= typeof user !== 'undefined' && user ? user.name : 'Guest' %>!</h2>
+
+    <h2>My Bookings</h2>
+
+    <p id="dashboard-bookings-loading">Loading bookings...</p>
+
+    <p id="dashboard-bookings-empty" hidden>
+        You have no bookings yet.
+    </p>
+
+    <p id="dashboard-bookings-error" hidden>
+        Unable to load bookings. Please try again later.
+    </p>
+
+    <div id="dashboard-bookings-list"></div>
+
+    <template id="dashboard-booking-template">
+        <article class="booking-card">
+            <h3 data-field="reference"></h3>
+            <p>Trip: <span data-field="trip"></span></p>
+            <p>Day: <span data-field="day"></span></p>
+            <p>Ticket class: <span data-field="ticket-class"></span></p>
+        </article>
+    </template>
+
+    <h2>Management</h2>
+    <a href="/bookings-admin">Manage Bookings</a>
+    <a href="/users-admin">Manage Users</a>
+</section>
+
+<%- include('partials/footer') %>
