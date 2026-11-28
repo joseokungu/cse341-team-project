@@ -10,6 +10,7 @@ import { trainsPage } from '../controllers/trains.js';
 import { tripDetailsPage, tripListPage } from '../controllers/trips.js';
 import { aboutPage, homePage, testErrorPage } from './index.js';
 import { loginPage, loginUser, logoutUser, registerPage, registerUser } from '../controllers/auth.js';
+import { dashboardPage } from '../controllers/dashboard.js';
 
 const router = Router();
 
@@ -28,5 +29,13 @@ router.post('/register', registerUser);
 router.get('/login', loginPage);
 router.post('/login', loginUser);
 router.get('/logout', logoutUser);
+// Temporary authentication guard for local integration testing.
+router.get('/dashboard', (req, res, next) => {
+  if (!req.user) {
+    return res.redirect('/login');
+  }
+
+  return next();
+}, dashboardPage);
 
 export default router;
