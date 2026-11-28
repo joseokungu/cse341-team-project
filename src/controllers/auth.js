@@ -47,7 +47,7 @@ const signIn = async (req, sessionUser) => {
 
 // Where a signed-in user goes. Admins have their own dashboard.
 const homeFor = (user) => {
-  return user.role === "admin" ? "/admin-dashboard" : "/";
+  return user.role === "admin" ? "/admin-dashboard" : "/dashboard";
 };
 
 // The passwords are never passed back to the page.

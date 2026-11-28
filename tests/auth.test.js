@@ -70,7 +70,7 @@ describe('POST /register', () => {
     const response = await register(request.agent(app));
 
     expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/');
+    expect(response.headers.location).toBe('/dashboard');
 
     const cookie = response.headers['set-cookie'].join(';');
     expect(cookie).toContain('connect.sid=');
@@ -107,7 +107,7 @@ describe('POST /register', () => {
     const customer = await getDb().collection('roles').findOne({ name: 'customer' });
 
     expect(String(user.role)).toBe(String(customer._id));
-    expect(response.headers.location).toBe('/');
+    expect(response.headers.location).toBe('/dashboard');
   });
 
   test('stores the email and username in lowercase', async () => {
@@ -127,7 +127,7 @@ describe('POST /register', () => {
     const response = await agent.get('/login');
 
     expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/');
+    expect(response.headers.location).toBe('/dashboard');
   });
 
   test.each([
@@ -207,13 +207,13 @@ describe('POST /register', () => {
 });
 
 describe('POST /login', () => {
-  test('signs a customer in and redirects to the home page', async () => {
+  test('signs a customer in and redirects to the dashboard', async () => {
     const user = await createTestUser({ role: 'customer' });
 
     const response = await signIn(request.agent(app), user);
 
     expect(response.status).toBe(302);
-    expect(response.headers.location).toBe('/');
+    expect(response.headers.location).toBe('/dashboard');
     expect(sessionCookie(response)).toBeDefined();
   });
 
