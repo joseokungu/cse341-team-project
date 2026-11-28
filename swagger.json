@@ -83,6 +83,76 @@
     }
   },
   "paths": {
+    "/api/trains": {
+      "get": {
+        "summary": "Get all trains",
+        "tags": [
+          "Trains"
+        ],
+        "responses": {
+          "200": {
+            "description": "A JSON array of trains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "series-e353"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Series E353 Limited Express"
+                      },
+                      "operator": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "maxSpeedKmh": {
+                        "type": "number"
+                      },
+                      "capacity": {
+                        "type": "number"
+                      },
+                      "powerSource": {
+                        "type": "string"
+                      },
+                      "bestFor": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "imageUrl": {
+                        "type": "string"
+                      },
+                      "imageAlt": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trips": {
       "get": {
         "summary": "Get all trips",
@@ -168,76 +238,6 @@
         }
       }
     },
-    "/api/trains": {
-      "get": {
-        "summary": "Get all trains",
-        "tags": [
-          "Trains"
-        ],
-        "responses": {
-          "200": {
-            "description": "A JSON array of trains",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "example": "series-e353"
-                      },
-                      "name": {
-                        "type": "string",
-                        "example": "Series E353 Limited Express"
-                      },
-                      "operator": {
-                        "type": "string"
-                      },
-                      "type": {
-                        "type": "string"
-                      },
-                      "maxSpeedKmh": {
-                        "type": "number"
-                      },
-                      "capacity": {
-                        "type": "number"
-                      },
-                      "powerSource": {
-                        "type": "string"
-                      },
-                      "bestFor": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "type": "string"
-                      },
-                      "imageUrl": {
-                        "type": "string"
-                      },
-                      "imageAlt": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/bookings": {
       "get": {
         "summary": "Get all bookings",
@@ -300,6 +300,26 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access bookings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }

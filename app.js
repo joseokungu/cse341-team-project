@@ -12,14 +12,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = Path.dirname(__filename);
 
 const app = express();
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-// Add version info to res.locals for access in templates.
 app.use((req, res, next) => {
     res.locals.appVersion = pkg.version;
     next();
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Configure static files and EJS templates.
 app.use(express.static(Path.join(__dirname, 'public')));

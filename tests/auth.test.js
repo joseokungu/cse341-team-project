@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+﻿import { afterEach, describe, expect, test, vi } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
 import { getDb } from '../src/db/connect.js';
@@ -323,3 +323,4 @@ describe('session secret', () => {
     );
   });
 });
+

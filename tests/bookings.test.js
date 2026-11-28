@@ -2,10 +2,48 @@ import { describe, expect, test } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import { getDb } from "../src/db/connect.js";
+import { Role, createUser } from "../src/models/users.js";
+
+async function loginAs(roleName) {
+  const email = `${roleName}@example.com`;
+  const password = "test-password";
+  const user = await createUser({
+    name: "Test User",
+    email,
+    password,
+  });
+
+  if (roleName === "admin") {
+    const adminRole = await Role.findOne({ name: "admin" });
+    user.role = adminRole._id;
+    await user.save();
+  }
+
+  const agent = request.agent(app);
+  await agent.post("/login").type("form").send({ email, password });
+  return agent;
+}
 
 describe("GET /api/bookings", () => {
-  test("returns a successful JSON response", async () => {
+  test("returns JSON 401 when the visitor is not signed in", async () => {
     const response = await request(app).get("/api/bookings");
+
+    expect(response.status).toBe(401);
+    expect(response.headers["content-type"]).toContain("application/json");
+    expect(response.body).toEqual({ error: "Authentication required" });
+  });
+
+  test("returns 403 when a customer requests bookings", async () => {
+    const customer = await loginAs("customer");
+    const response = await customer.get("/api/bookings");
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({ error: "Forbidden" });
+  });
+
+  test("returns a successful JSON response for an admin", async () => {
+    const admin = await loginAs("admin");
+    const response = await admin.get("/api/bookings");
 
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toContain("application/json");
@@ -14,6 +52,7 @@ describe("GET /api/bookings", () => {
   });
 
   test("returns all bookings from the database", async () => {
+    const admin = await loginAs("admin");
     const db = getDb();
 
     await db.collection("bookings").insertOne({
@@ -32,7 +71,7 @@ describe("GET /api/bookings", () => {
       ],
     });
 
-    const response = await request(app).get("/api/bookings");
+    const response = await admin.get("/api/bookings");
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
@@ -145,8 +184,24 @@ describe("POST /trips/book", () => {
 });
 
 describe("GET /bookings-admin", () => {
-  test("displays the bookings administration page", async () => {
+  test("redirects visitors who are not signed in to login", async () => {
     const response = await request(app).get("/bookings-admin");
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe("/login");
+  });
+
+  test("returns 403 to a signed-in customer", async () => {
+    const customer = await loginAs("customer");
+    const response = await customer.get("/bookings-admin");
+
+    expect(response.status).toBe(403);
+    expect(response.text).toContain("Access Denied");
+  });
+
+  test("displays the bookings administration page to an admin", async () => {
+    const admin = await loginAs("admin");
+    const response = await admin.get("/bookings-admin");
 
     expect(response.status).toBe(200);
     expect(response.text).toContain("Bookings Administration");

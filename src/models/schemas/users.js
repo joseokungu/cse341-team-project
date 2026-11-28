@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.virtual("name").get(function () {
+  return this.displayName;
+});
+
 const user = mongoose.model("User", userSchema);
 
 export default user;

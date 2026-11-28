@@ -16,6 +16,7 @@ import { Router } from 'express';
 import { getAllTrains } from '../controllers/trains.js';
 import { getAllBookings } from '../controllers/bookings.js';
 import { getAllTrips, getTripById } from '../controllers/trips.js';
+import { requireApiRole } from '../middleware/auth.js';
 import {
   getSchedulesForTrip,
   getSchedulesForTripAndMonth,
@@ -238,8 +239,20 @@ router.get('/api/trips/:id', getTripById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Authentication required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: User does not have permission to access bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.get('/api/bookings', getAllBookings);
+router.get('/api/bookings', requireApiRole('admin'), getAllBookings);
 
 
 /**

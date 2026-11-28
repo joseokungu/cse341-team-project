@@ -1,4 +1,4 @@
-/* Styles for the register and login pages. */
+﻿/* Styles for the register and login pages. */
 .auth-form {
     max-width: 28rem;
     margin: 2rem auto;
@@ -39,3 +39,4 @@
     margin: 0;
     padding-left: 1.25rem;
 }
+

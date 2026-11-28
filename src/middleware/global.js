@@ -8,6 +8,11 @@ const setLocalVariables = (req, res, next) => {
     // Make any query parameters available to all templates
     res.locals.query = req.query;
 
+    // Expose only the public session identity fields to EJS templates.
+    res.locals.currentUser = req.session?.username
+        ? { username: req.session.username, role: req.session.role }
+        : null;
+
     next();
 };
 

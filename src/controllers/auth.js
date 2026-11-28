@@ -1,4 +1,4 @@
-// EJS controllers for registering, signing in, and signing out.
+﻿// EJS controllers for registering, signing in, and signing out.
 import {
   getBody,
   validateLogin,
@@ -91,7 +91,14 @@ export async function registerUser(req, res, next) {
 
     // Only the validated fields are passed on. A submitted "role" is never read, so
     // every new account is a customer.
-    const user = await createUser(values);
+    const createdUser = await createUser(values);
+    const user = {
+      id: String(createdUser._id),
+      name: createdUser.displayName,
+      username: createdUser.username,
+      email: createdUser.email,
+      role: createdUser.role.name,
+    };
 
     await signIn(req, user);
 
@@ -167,3 +174,4 @@ export async function logoutUser(req, res, next) {
     return next(error);
   }
 }
+
