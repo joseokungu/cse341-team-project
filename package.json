@@ -1,7 +1,7 @@
 {
 	"name": "kizuna-rail-byui-demo",
 	"dependencies": {
-		"bcrypt": "^6.0.0",
+		"bcryptjs": "^3.0.3",
 		"ejs": "^6.0.1",
 		"express": "^5.1.0",
 		"express-session": "^1.19.0",
@@ -19,7 +19,8 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"swagger": "node swagger.js",
-		"swagger:watch": "nodemon --watch swagger.js --exec 'node swagger.js'"
+		"swagger:watch": "nodemon --watch swagger.js --exec 'node swagger.js'",
+		"db:seed-roles": "node --env-file=.env src/db/seed-roles.js"
 	},
 	"type": "module",
 	"version": "1.0.0",

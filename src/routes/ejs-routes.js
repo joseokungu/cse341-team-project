@@ -41,5 +41,6 @@ router.post('/trips/book', processBookingRequest);
 router.get('/trips/confirmation/:confirmationId', bookingConfirmationPage);
 router.get('/500', testErrorPage);
 router.get('/bookings-admin', requirePageRole('admin'), bookingsAdminPage);
+router.get('/logout', logoutUser);
 
 export default router;

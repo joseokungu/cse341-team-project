@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hookTripsCatalog();
     hookTrainsCatalog();
     hookBookingsCatalog();
+    hookSchedulesCatalog();
 });
 
 
@@ -263,4 +264,97 @@ const hookBookingsCatalog = async () => {
                 'Unable to load bookings right now. Please try again later.';
         }
     }
+};
+
+
+const hookSchedulesCatalog = () => {
+    const sectionEl = document.getElementById('trip-schedules');
+    const monthSelect = document.getElementById('schedule-month');
+    const listEl = document.getElementById('schedules-grid');
+    const templateEl = document.getElementById('schedule-card-template');
+    const messageEl = document.getElementById('schedules-message');
+
+    // Only run on the trip details page.
+    if (!sectionEl || !monthSelect || !listEl || !templateEl || !messageEl) {
+        return;
+    }
+
+    const tripId = sectionEl.dataset.tripId;
+    let requestId = 0;
+
+    const loadSchedules = async () => {
+        const currentRequest = ++requestId;
+        const month = monthSelect.value;
+
+        const url = `/api/trips/${encodeURIComponent(tripId)}/schedules` +
+            (month ? `?month=${encodeURIComponent(month)}` : '');
+
+        messageEl.hidden = false;
+        messageEl.textContent = 'Loading schedules...';
+        listEl.replaceChildren();
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`Failed to load schedules (${response.status})`);
+            }
+
+            const schedules = await response.json();
+
+            if (!Array.isArray(schedules)) {
+                throw new Error('Invalid schedules response');
+            }
+
+            // Ignore an older response if the visitor changed months.
+            if (currentRequest !== requestId) {
+                return;
+            }
+
+            if (schedules.length === 0) {
+                messageEl.textContent = 'No schedules available for this month.';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+
+            schedules.forEach((schedule) => {
+                const card = templateEl.content.cloneNode(true);
+
+                card.querySelector('.departure-time').textContent =
+                    schedule.departureTime;
+
+                card.querySelector('.arrival-time').textContent =
+                    schedule.arrivalTime;
+
+                const daysEl = card.querySelector('.schedule-days');
+
+                schedule.daysOfWeek.forEach((day) => {
+                    const badge = document.createElement('span');
+                    badge.className = 'day-badge';
+                    badge.textContent = day.substring(0, 3);
+                    daysEl.appendChild(badge);
+                });
+
+                card.querySelector('.book-btn').href =
+                    `/trips/booking/${encodeURIComponent(schedule.id)}`;
+
+                fragment.appendChild(card);
+            });
+
+            listEl.replaceChildren(fragment);
+            messageEl.hidden = true;
+        } catch (error) {
+            if (currentRequest !== requestId) {
+                return;
+            }
+
+            console.error('Error loading schedules:', error);
+            messageEl.textContent =
+                'Unable to load schedules right now. Please try again later.';
+        }
+    };
+
+    monthSelect.addEventListener('change', loadSchedules);
+    loadSchedules();
 };
